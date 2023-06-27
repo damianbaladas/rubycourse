@@ -1,7 +1,6 @@
 def generate_secret_code
-  # Generates a random secret code of four numbers from 1 to 6.
-  secret_code = []
-  4.times { secret_code << rand(1..6) }
+  # Generates a random secret code of four unique numbers from 1 to 6.
+  secret_code = (1..6).to_a.sample(4)
   secret_code
 end
 
@@ -43,22 +42,30 @@ def display_feedback(exact_matches, partial_matches)
   puts "Partial matches: #{partial_matches}"
 end
 
-# Game logic
-puts "Welcome to Mastermind!"
-secret_code = generate_secret_code
+def play_mastermind
+  puts "Welcome to Mastermind!"
+  secret_code = generate_secret_code
 
-12.times do |turn|
-  puts "\nTurn #{turn + 1}:"
-  guess = get_guess
-  exact_matches, partial_matches = evaluate_guess(secret_code, guess)
-  display_feedback(exact_matches, partial_matches)
+  12.times do |turn|
+    puts "\nTurn #{turn + 1}:"
+    guess = get_guess
+    exact_matches, partial_matches = evaluate_guess(secret_code, guess)
+    display_feedback(exact_matches, partial_matches)
 
-  if exact_matches == 4
-    puts "\nCongratulations! You guessed the secret code correctly!"
-    break
+    if exact_matches == 4
+      puts "\nCongratulations! You guessed the secret code correctly!"
+      return
+    end
+
+    if turn == 11
+      puts "\nGame over! You ran out of turns. The secret code was: #{secret_code.join(' ')}"
+    end
   end
+end
 
-  if turn == 11
-    puts "\nGame over! You ran out of turns. The secret code was: #{secret_code.join(' ')}"
-  end
+loop do
+  play_mastermind
+  print "Do you want to play again? (yes/no): "
+  play_again = gets.chomp.downcase
+  break if play_again == "no"
 end
